@@ -33,3 +33,5 @@
 
 # sublime sftp
 sftp-config.json
+
+*.dSYM/

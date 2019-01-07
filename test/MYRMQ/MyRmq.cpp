@@ -80,32 +80,6 @@ void MyRmq::receive(std::string exchange,std::string binding_key,std::string que
 
 	for (;;)
 	{
-		// amqp_rpc_reply_t res;
-		// amqp_envelope_t envelope;
-		// amqp_maybe_release_buffers(conn);
-		// res = amqp_consume_message(conn,&envelope,NULL,0);
-		// if (AMQP_RESPONSE_NORMAL != res.reply_type)
-		// 	break;
-
-		// char * request = (char*)envelope.message.body.bytes;
-		// char * response = (*fun)(request);
-
-		// amqp_basic_properties_t props;
-		// amqp_basic_publish(
-		// 	conn,
-		// 	1,
-		// 	amqp_cstring_bytes(""),
-		// 	envelope.message.properties.reply_to,
-		// 	0,
-		// 	0,
-		// 	&props,
-		// 	amqp_cstring_bytes(response)
-		// );
-		// std::cout << "reply to: " << (char*)envelope.message.properties.reply_to.bytes << std::endl;
-		// std::cout << "after resp: " << response << std::endl;
-		// amqp_destroy_envelope(&envelope);
-		// free(response);
-
 		amqp_rpc_reply_t res;
 		amqp_envelope_t envelope;
 		amqp_maybe_release_buffers(conn);
@@ -115,10 +89,12 @@ void MyRmq::receive(std::string exchange,std::string binding_key,std::string que
             std::cout << "res.library_error: " << res.library_error << std::endl;
             break;
         }
-            
 
-        printf("request:\n%s\n", (char*)envelope.message.body.bytes);
-        printf("reply_to:\n%s\n", (char*)envelope.message.properties.reply_to.bytes);
+        char * request = (char*)envelope.message.body.bytes;
+        *(request + envelope.message.body.len) = '\0';
+        char * response = (*fun)(request);
+        std::cout << "request: " << request << std::endl;
+        std::cout << "response: " << response << std::endl;
 
 		amqp_basic_properties_t props;
         props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG | AMQP_BASIC_DELIVERY_MODE_FLAG;
@@ -134,7 +110,7 @@ void MyRmq::receive(std::string exchange,std::string binding_key,std::string que
 			0,
 			0,
 			&props,
-			amqp_cstring_bytes("response...")
+			amqp_cstring_bytes(response)
 		);
         if (AMQP_STATUS_OK != res_code)
         {
@@ -142,6 +118,7 @@ void MyRmq::receive(std::string exchange,std::string binding_key,std::string que
         }
 
         amqp_destroy_envelope(&envelope);
+        free(response);
 	}
 
 	die_on_amqp_error(amqp_channel_close(conn,1,AMQP_REPLY_SUCCESS),"closing channel");

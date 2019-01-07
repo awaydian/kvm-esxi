@@ -4,7 +4,7 @@
 
 char * process(char * request)
 {
-	char * resp_str = "response...";
+	char * resp_str = "process...response...";
 	char * response = (char*)malloc((int)strlen(resp_str) + 1);
 	strcpy(response,resp_str);
 
