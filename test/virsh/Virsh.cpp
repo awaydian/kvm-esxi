@@ -4,7 +4,17 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "common/utils.h"
+
+#include <string>
+#include <sstream>
+
+std::string int2str(int i)
+{
+	std::stringstream s;
+	s << i;
+	return s.str();
+}
+
 
 // virConnectPtr Virsh::conn = NULL;
 Virsh::Virsh()

@@ -5,18 +5,15 @@ CC 			= g++
 # LIBS
 
 DEF_INC 	= -I../../lib/MyRmq -I../../lib/librabbitmq \
-			-I../../lib
+			-I../../lib -I./
 
 INCS 		= $(DEF_INC)
 
 CFLAGS 		= $(INCS)
 CFLAGS 		+= -g -Wall -O2 -std=c++11
-LDFLAGS 	= -lrabbitmq
+LDFLAGS 	= -lrabbitmq -lvirt
 
-SRC_CPP 	= $(wildcard ./*.cpp ../../lib/MyRmq/*.cpp)
-
-vmmgr.out: vmmgr.cpp
-	g++ vmmgr.cpp ../../lib/MyRmq/*.cpp 
+SRC_CPP 	= $(wildcard ./*.cpp ./virsh/*.cpp ../../lib/MyRmq/*.cpp ../../lib/common/*.cpp)
 
 all: $(BIN)
 
