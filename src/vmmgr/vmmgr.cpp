@@ -29,47 +29,52 @@ char * process(char * request)
 
 	switch (msg_type) {
 		case 200:
-			{
-				resp_str = "vm list";
-				std::vector<std::map<std::string,std::string> > vmList;
-				Virsh vir("qemu+ssh://root@192.168.2.236/system?socket=/var/run/libvirt/libvirt-sock");
-				if( vir.getVmList(vmList)) {
-					std::cout << "getVmList error\n";
-					resp_str = "{\"code\":1, \"msg_type\":200}";
-					break;
-				}
-
-				rapidjson::StringBuffer sb;
-				rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-				writer.StartObject();
-				writer.Key("msg_type");
-				writer.Int(msg_type);
-				writer.Key("code");
-				writer.Int(1);
-
-				writer.Key("data");
-				writer.StartArray();
-				for (std::vector<std::map<std::string,std::string> >::const_iterator iter = vmList.cbegin(); iter != vmList.cend(); iter++)
-				{
-					std::map<std::string,std::string> vmTmp = (*iter);
-
-					writer.StartObject();
-					writer.Key("name");
-					writer.String(vmTmp["name"].c_str());
-					// writer.String(((std::map<std::string,std::string>)(*iter))["name"].c_str());
-					writer.Key("uuid");
-					writer.String(vmTmp["uuid"].c_str());
-					writer.Key("state");
-					writer.String(vmTmp["state"].c_str());
-					writer.EndObject();
-				}
-				writer.EndArray();
-
-				writer.EndObject();
-				// std::cout << sb.GetString() << std::endl;
-				resp_str = (char*)sb.GetString();
+		{
+			resp_str = "vm list";
+			std::vector<std::map<std::string,std::string> > vmList;
+			Virsh vir("qemu+ssh://root@192.168.88.223/system?socket=/var/run/libvirt/libvirt-sock");
+			if( vir.getVmList(vmList)) {
+				std::cout << "getVmList error\n";
+				resp_str = "{\"code\":1, \"msg_type\":200}";
 				break;
 			}
+
+			rapidjson::StringBuffer sb;
+			rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+			writer.StartObject();
+			writer.Key("msg_type");
+			writer.Int(msg_type);
+			writer.Key("code");
+			writer.Int(1);
+
+			writer.Key("data");
+			writer.StartArray();
+			for (std::vector<std::map<std::string,std::string> >::const_iterator iter = vmList.cbegin(); iter != vmList.cend(); iter++)
+			{
+				std::map<std::string,std::string> vmTmp = (*iter);
+
+				writer.StartObject();
+				writer.Key("name");
+				writer.String(vmTmp["name"].c_str());
+				// writer.String(((std::map<std::string,std::string>)(*iter))["name"].c_str());
+				writer.Key("uuid");
+				writer.String(vmTmp["uuid"].c_str());
+				writer.Key("state");
+				writer.String(vmTmp["state"].c_str());
+				writer.EndObject();
+			}
+			writer.EndArray();
+
+			writer.EndObject();
+			// std::cout << sb.GetString() << std::endl;
+			resp_str = (char*)sb.GetString();
+			break;
+		}
+		case 201:
+		{
+			
+			break;
+		}
 		default:
 			break;
 	}

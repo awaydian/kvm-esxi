@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "common/utils.h"
 
@@ -103,4 +104,69 @@ int Virsh::getVmList(std::vector<std::map<std::string,std::string> > &vmList)
 
 	return 0;
 }
+
+int Virsh::operateVm(char *vm_uuid, int op_code)
+{
+	virDomainPtr dom = NULL;
+	int flag = 1;
+	std::cout << "operateVm uuid: " << vm_uuid << " op: " << op_code << std::endl;
+	dom = virDomainLookupByUUIDString(conn, vm_uuid);
+	if (dom == NULL)
+	{
+		std::cout << "domain lookup failed\n";
+		return 1;
+	}
+
+	switch (op_code){
+		case 0:
+		{
+			// flag = virDomainShutdown(dom);
+			// if (flag != 0)	std::cout << "domain start failed\n";
+			break;
+		}
+		case 1:
+		{
+			flag = virDomainShutdown(dom);
+			if (flag != 0)	std::cout << "domain shutdown failed\n";
+			break;
+		}
+		case 2:
+		{
+			flag = virDomainDestroy(dom);
+			if (flag != 0)	std::cout << "domain destroy failed\n";
+			break;
+		}
+		case 3:
+		{
+			flag = virDomainUndefine(dom);
+			if (flag != 0)	std::cout << "domain undefine failed\n";
+			break;
+		}
+		case 4:
+		{
+			flag = virDomainSuspend(dom);
+			if (flag != 0)	std::cout << "domain suspend failed\n";
+			break;
+		}
+		case 5:
+		{
+			flag = virDomainResume(dom);
+			if (flag != 0)	std::cout << "domain resume failed\n";
+			break;
+		}
+		case 6:
+		{
+			flag = virDomainReboot(dom,VIR_DOMAIN_REBOOT_DEFAULT);
+			if (flag != 0)	std::cout << "domain reboot failed\n";
+			break;
+		}
+
+		default:
+			break;
+	}
+	return flag;
+}
+
+
+
 

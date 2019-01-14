@@ -22,6 +22,7 @@ public:
 	~Virsh();
 
 	int getVmList(std::vector<std::map<std::string,std::string> > &vmList);
+	int operateVm(char * vm_uuid, int op_code);
 private:
 	// static virConnectPtr conn;
 	// static virDomainPtr dom;

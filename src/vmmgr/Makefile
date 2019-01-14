@@ -15,7 +15,12 @@ LDFLAGS 	= -lrabbitmq -lvirt
 
 SRC_CPP 	= $(wildcard ./*.cpp ./virsh/*.cpp ../../lib/MyRmq/*.cpp ../../lib/common/*.cpp)
 
-all: $(BIN)
+TEST_CPP 	= $(wildcard ./virsh/*.cpp ../../lib/MyRmq/*.cpp ../../lib/common/*.cpp)
+
+all: $(BIN) test.out
 
 $(BIN) : $(SRC_CPP)
 	$(CC) -o $(BIN) $(SRC_CPP) $(CFLAGS) $(LDFLAGS)
+
+test.out : $(SRC_CPP) test.c
+	$(CC) -o test.out $(TEST_CPP) test.c $(CFLAGS) $(LDFLAGS)
