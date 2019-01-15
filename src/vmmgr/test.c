@@ -10,13 +10,19 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 
-
+// #define HOST_IP "192.168.88.223"
+#define HOST_IP "192.168.2.249"
 
 int main()
 {	
-	Virsh vir("qemu+ssh://root@192.168.88.223/system?socket=/var/run/libvirt/libvirt-sock");
+	std::string connUrl= "";
+	connUrl += "qemu+ssh://root@";
+	connUrl += HOST_IP;
+	connUrl += "/system?socket=/var/run/libvirt/libvirt-sock";
+	// char * connUrl = "qemu+ssh://root@192.168.88.223/system?socket=/var/run/libvirt/libvirt-sock";
+	Virsh vir(connUrl.c_str());
 
-	vir.operateVm("544f4d91-f266-445b-8804-69a9221a339a",6);
+	vir.operateVm("544f4d91-f266-445b-8804-69a9221a339a",0);
 	return 0;
 
 	int msg_type = 200;

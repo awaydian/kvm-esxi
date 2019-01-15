@@ -120,8 +120,10 @@ int Virsh::operateVm(char *vm_uuid, int op_code)
 	switch (op_code){
 		case 0:
 		{
-			// flag = virDomainShutdown(dom);
-			// if (flag != 0)	std::cout << "domain start failed\n";
+			std::string cmd = "virsh start ";
+			cmd += vm_uuid;
+			flag = execCmd(cmd.c_str());
+			if (flag != 0)	std::cout << "domain start failed\n";
 			break;
 		}
 		case 1:
