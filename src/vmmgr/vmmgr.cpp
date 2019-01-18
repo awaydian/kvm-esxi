@@ -10,6 +10,9 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 
+#define MSG_TYPE_VM_GET_LIST	200
+#define MSG_TYPE_VM_OPERATE		201
+
 
 char * process(char * request)
 {
@@ -27,12 +30,14 @@ char * process(char * request)
 
 	char * resp_str = NULL;
 
+	Virsh vir("qemu+ssh://root@192.168.2.249/system?socket=/var/run/libvirt/libvirt-sock");
+
+
 	switch (msg_type) {
-		case 200:
+		case MSG_TYPE_VM_GET_LIST:
 		{
 			resp_str = "vm list";
 			std::vector<std::map<std::string,std::string> > vmList;
-			Virsh vir("qemu+ssh://root@192.168.88.223/system?socket=/var/run/libvirt/libvirt-sock");
 			if( vir.getVmList(vmList)) {
 				std::cout << "getVmList error\n";
 				resp_str = "{\"code\":1, \"msg_type\":200}";
@@ -70,13 +75,29 @@ char * process(char * request)
 			resp_str = (char*)sb.GetString();
 			break;
 		}
-		case 201:
+		case MSG_TYPE_VM_OPERATE:
 		{
+			assert(doc.HasMember("data"));
+			assert(doc["data"].IsObject());
+
+			rapidjson::Value &dataObj = doc["data"];
+			assert(dataObj.IsObject());
+			assert(dataObj.HasMember("uuid"));
+			assert(dataObj.HasMember("op_code"));
+
+			const char *vm_uuid = dataObj["uuid"].GetString();
+			int op_code = dataObj["op_code"].GetInt();
+			vir.operateVm(vm_uuid, op_code);
 			
 			break;
 		}
 		default:
 			break;
+	}
+
+	if (resp_str == NULL)
+	{
+		return NULL;
 	}
 
 	char * response = (char*)malloc((int)strlen(resp_str) + 1);

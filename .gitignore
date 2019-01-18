@@ -35,3 +35,4 @@
 sftp-config.json
 
 *.dSYM/
+.DS_Store

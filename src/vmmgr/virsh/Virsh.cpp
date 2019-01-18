@@ -105,7 +105,7 @@ int Virsh::getVmList(std::vector<std::map<std::string,std::string> > &vmList)
 	return 0;
 }
 
-int Virsh::operateVm(char *vm_uuid, int op_code)
+int Virsh::operateVm(const char *vm_uuid, int op_code)
 {
 	virDomainPtr dom = NULL;
 	int flag = 1;
@@ -118,7 +118,7 @@ int Virsh::operateVm(char *vm_uuid, int op_code)
 	}
 
 	switch (op_code){
-		case 0:
+		case VM_OPCODE_START:
 		{
 			std::string cmd = "virsh start ";
 			cmd += vm_uuid;
@@ -126,37 +126,37 @@ int Virsh::operateVm(char *vm_uuid, int op_code)
 			if (flag != 0)	std::cout << "domain start failed\n";
 			break;
 		}
-		case 1:
+		case VM_OPCODE_SHUTDOWN:
 		{
 			flag = virDomainShutdown(dom);
 			if (flag != 0)	std::cout << "domain shutdown failed\n";
 			break;
 		}
-		case 2:
+		case VM_OPCODE_DESTROY:
 		{
 			flag = virDomainDestroy(dom);
 			if (flag != 0)	std::cout << "domain destroy failed\n";
 			break;
 		}
-		case 3:
+		case VM_OPCODE_UNDEFINE:
 		{
 			flag = virDomainUndefine(dom);
 			if (flag != 0)	std::cout << "domain undefine failed\n";
 			break;
 		}
-		case 4:
+		case VM_OPCODE_SUSPEND:
 		{
 			flag = virDomainSuspend(dom);
 			if (flag != 0)	std::cout << "domain suspend failed\n";
 			break;
 		}
-		case 5:
+		case VM_OPCODE_RESUME:
 		{
 			flag = virDomainResume(dom);
 			if (flag != 0)	std::cout << "domain resume failed\n";
 			break;
 		}
-		case 6:
+		case VM_OPCODE_REBOOT:
 		{
 			flag = virDomainReboot(dom,VIR_DOMAIN_REBOOT_DEFAULT);
 			if (flag != 0)	std::cout << "domain reboot failed\n";

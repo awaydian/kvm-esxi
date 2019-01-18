@@ -15,9 +15,20 @@ channel = connection.channel()
 #exchange -- 它使我们能够确切地指定消息应该到哪个队列去。
 #向队列插入数值 routing_key是队列名 body是要插入的内容
 
+# msg_body = "{\"msg_type\":200}"
+msg_body = '''
+{
+	\"msg_type\":201,
+	\"data\":{
+		\"uuid\":\"544f4d91-f266-445b-8804-69a9221a339a\",
+		\"op_code\":0
+	}
+}
+'''
+
 channel.basic_publish(exchange='amq.direct',
                   routing_key='my_binding_key',
-                  body="{\"msg_type\":200}")
+                  body=msg_body)
 print("开始队列")
 #缓冲区已经flush而且消息已经确认发送到了RabbitMQ中，关闭链接
 connection.close()

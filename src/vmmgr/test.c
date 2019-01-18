@@ -22,7 +22,7 @@ int main()
 	// char * connUrl = "qemu+ssh://root@192.168.88.223/system?socket=/var/run/libvirt/libvirt-sock";
 	Virsh vir(connUrl.c_str());
 
-	vir.operateVm("544f4d91-f266-445b-8804-69a9221a339a",0);
+	vir.operateVm("eee82724-e7da-4129-b64d-fbd30a5d1641",VM_OPCODE_START);
 	return 0;
 
 	int msg_type = 200;

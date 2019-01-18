@@ -94,31 +94,33 @@ void MyRmq::receive(std::string exchange,std::string binding_key,std::string que
         *(request + envelope.message.body.len) = '\0';
         char * response = (*fun)(request);
         std::cout << "request: " << request << std::endl;
-        std::cout << "response: " << response << std::endl;
-
-		amqp_basic_properties_t props;
-        props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG | AMQP_BASIC_DELIVERY_MODE_FLAG;
-        props.content_type = amqp_cstring_bytes("application/json");
-        props.delivery_mode = AMQP_DELIVERY_PERSISTENT; /* persistent delivery mode */
-
-
-		int res_code = amqp_basic_publish(
-			conn,
-			1,
-			amqp_cstring_bytes(""),
-			envelope.message.properties.reply_to,
-			0,
-			0,
-			&props,
-			amqp_cstring_bytes(response)
-		);
-        if (AMQP_STATUS_OK != res_code)
+        
+        if (response != NULL)
         {
-            std::cout << "response failed, code: " << res_code << std::endl;
+        	std::cout << "response: " << response << std::endl;
+    		amqp_basic_properties_t props;
+            props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG | AMQP_BASIC_DELIVERY_MODE_FLAG;
+            props.content_type = amqp_cstring_bytes("application/json");
+            props.delivery_mode = AMQP_DELIVERY_PERSISTENT; /* persistent delivery mode */
+
+    		int res_code = amqp_basic_publish(
+    			conn,
+    			1,
+    			amqp_cstring_bytes(""),
+    			envelope.message.properties.reply_to,
+    			0,
+    			0,
+    			&props,
+    			amqp_cstring_bytes(response)
+    		);
+            if (AMQP_STATUS_OK != res_code)
+            {
+                std::cout << "response failed, code: " << res_code << std::endl;
+            }
+            free(response);
         }
 
         amqp_destroy_envelope(&envelope);
-        free(response);
 	}
 
 	die_on_amqp_error(amqp_channel_close(conn,1,AMQP_REPLY_SUCCESS),"closing channel");
